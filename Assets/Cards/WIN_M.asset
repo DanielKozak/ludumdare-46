@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1247d188ae585ed4f9922ef80998b0a3, type: 3}
+  m_Name: WIN_M
+  m_EditorClassIdentifier: 
+  Name: Stage a Cue
+  Description: The GVRNMNT runs in shock as you enter the hall of power on the shoulders
+    of your countless supporters
+  Graphic: {fileID: 0}
+  CostPower: 0
+  CostFund: 0
+  EffectPower: 0
+  EffectFunds: 0
+  EffectFollowersRadical: 0
+  EffectFollowersModerate: 0
+  EffectVisibility: 0
+  EffectHope: 0
+  Rarity: -1
+  ReqFunds: 0
+  ReqFRadical: 0
+  ReqFModerate: 500
+  ReqVisibilityMin: 0
+  ReqVisibilityMax: -1
+  ReqHopeMin: 100
+  ReqHopeMax: -1
