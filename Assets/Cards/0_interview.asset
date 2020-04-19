@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Interview
   Description: Speak publicly to rally support
   Graphic: {fileID: 0}
-  CostPower: -1
+  CostPower: -2
   CostFund: -50
   EffectPower: 0
   EffectFunds: 0

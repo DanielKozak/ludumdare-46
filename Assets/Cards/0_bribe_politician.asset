@@ -17,7 +17,7 @@ MonoBehaviour:
   Graphic: {fileID: 0}
   CostPower: 0
   CostFund: -50
-  EffectPower: 10
+  EffectPower: 5
   EffectFunds: 0
   EffectFollowersRadical: 0
   EffectFollowersModerate: 0

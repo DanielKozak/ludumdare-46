@@ -146,6 +146,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator WarmupRoutine()
     {
         PredictHope -= HopeDecayValue;
+        UpdatePredictions();
         for (int i = HandCount; i < 5; i++)
         {
             Deck.Instance.GenerateCard();
@@ -188,7 +189,7 @@ public class GameManager : MonoBehaviour
 
     private void ProcessTurn()
     {
-        Hope -= HopeDecayValue;
+       
         foreach (Card item in TableCards)
         {
             Power += item.CostPower;
@@ -288,19 +289,19 @@ public class GameManager : MonoBehaviour
 
         bool isBlinking;
         InterfaceManager.Instance.LabelPredictPower.text = PredictPower == 0 ? "" : 
-            PredictPower < 0 ? prefixRed + PredictPower.ToString() + suffix : prefixGreen + PredictPower.ToString() + suffix;
+            PredictPower < 0 ? prefixRed + PredictPower.ToString() + suffix : prefixGreen + "+" + PredictPower.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictFunds.text = PredictFunds == 0 ? "" : 
-            PredictFunds < 0 ? prefixRed + PredictFunds.ToString() + suffix : prefixGreen + PredictFunds.ToString() + suffix;
+            PredictFunds < 0 ? prefixRed + PredictFunds.ToString() + suffix : prefixGreen + "+" + PredictFunds.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictFollowersRadical.text = PredictFRad == 0 ? "" :
-            PredictFRad < 0 ? prefixRed + PredictFRad.ToString() + suffix : prefixGreen + PredictFRad.ToString() + suffix;
+            PredictFRad < 0 ? prefixRed + PredictFRad.ToString() + suffix : prefixGreen + "+" + PredictFRad.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictFollowersModerate.text = PredictFmod == 0 ? "" :
-            PredictFmod < 0 ? prefixRed + PredictFmod.ToString() + suffix : prefixGreen + PredictFmod.ToString() + suffix;
+            PredictFmod < 0 ? prefixRed + PredictFmod.ToString() + suffix : prefixGreen + "+" + PredictFmod.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictVisibility.text = PredictVisibility == 0 ? "" : 
-            PredictVisibility < 0 ? prefixRed + PredictVisibility.ToString() + suffix : prefixGreen + PredictVisibility.ToString() + suffix;
+            PredictVisibility < 0 ? prefixGreen + PredictVisibility.ToString() + suffix : prefixRed + "+" + PredictVisibility.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictHope.text = PredictHope == 0 ? "" :
             PredictHope < 0 ? prefixRed + PredictHope.ToString() + suffix : prefixGreen + PredictHope.ToString() + suffix;

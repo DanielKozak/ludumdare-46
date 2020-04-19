@@ -47,6 +47,8 @@ public class InterfaceManager : MonoBehaviour
 
     public GameObject PyshschItemPrefab;
 
+    public List<string> monthses = new List<string>();
+
     public void ShowMainMenu()
     {
         currentCanvas.gameObject.SetActive(false);

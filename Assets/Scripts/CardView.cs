@@ -182,8 +182,10 @@ public class CardView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isAcceptingDrag) return;
+        transform.SetParent(InterfaceManager.Instance.GameCanvas.transform);
         startingPosition = transform.position;
-        if(CardData.Rarity != 3)
+        if (isOnTable) return;
+        if (CardData.Rarity != 3)
         {
             foreach(var slot in InterfaceManager.Instance.TableSlots)
             {
