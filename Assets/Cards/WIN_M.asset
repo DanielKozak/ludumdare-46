@@ -21,7 +21,7 @@ MonoBehaviour:
   EffectPower: 0
   EffectFunds: 0
   EffectFollowersRadical: 0
-  EffectFollowersModerate: 0
+  EffectFollowersModerate: -500
   EffectVisibility: 0
   EffectHope: 0
   Rarity: -1

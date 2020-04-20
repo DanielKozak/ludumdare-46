@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,20 +30,33 @@ public class GameManager : MonoBehaviour
     public bool win_radical = false;
     public bool win_moderate = false;
     //-----------RESOURCES-------------
-
+    public int PowerIncrementValue;
     public int HopeDecayValue;
     #region resources;
     private int _hope;
+    bool hopeFlashing = false;
+    bool firstTime = true;
+
     [HideInInspector]
     public int Hope {
         get => _hope;
         set {
+            
             _hope = value;
-            InterfaceManager.Instance.LabelHope.text = _hope.ToString();
+            if (_hope >= 100)
+            {
+                winConditionHope = true;
+                InterfaceManager.Instance.LabelHope.text = "<color=#ffd700>" +_hope.ToString() + "<color=#ffd700>/100</color>";
+            }
+            else
+            {
+                InterfaceManager.Instance.LabelHope.text = _hope.ToString() + "<color=#ffd700>/100</color>";
+            }
         }
     }
     public int HopeDefault;
     public int PredictHope;
+         
 
     private int _power;
     [HideInInspector]
@@ -65,6 +79,10 @@ public class GameManager : MonoBehaviour
         get => _funds;
         set
         {
+            if (value < 0)
+            {
+                value = 0; //END GAME TRIGGER
+            }
             _funds = value;
             InterfaceManager.Instance.LabelFunds.text = _funds.ToString();
         }
@@ -81,7 +99,19 @@ public class GameManager : MonoBehaviour
         set
         {
             _fRadical = value;
-            InterfaceManager.Instance.LabelFollowersRadical.text = _fRadical.ToString();
+
+            if (winConditionHope)
+            {
+                if (_fRadical >= 100)
+                {
+                    InterfaceManager.Instance.LabelFollowersRadical.text = "<color=#ffd700>" + _fRadical.ToString() + "<color=#ffd700>/200</color>";
+                }
+                else
+                {
+                    InterfaceManager.Instance.LabelFollowersRadical.text = _fRadical.ToString() + "<color=#ffd700>/200</color>";
+                }
+            }
+            else InterfaceManager.Instance.LabelFollowersRadical.text = _fRadical.ToString() ;
         }
     }
     public int FollowersRadicalDefault;
@@ -96,7 +126,19 @@ public class GameManager : MonoBehaviour
         set
         {
             _fModerate = value;
-            InterfaceManager.Instance.LabelFollowersModerate.text = _fModerate.ToString();
+            if (winConditionHope)
+            {
+                if (_fModerate >=1000)
+                {
+                    InterfaceManager.Instance.LabelFollowersModerate.text = "<color=#ffd700>" + _fModerate.ToString() + "<color=#ffd700>/500</color>";
+                }
+                else
+                {
+                    InterfaceManager.Instance.LabelFollowersModerate.text = _fModerate.ToString() + "<color=#ffd700>/500</color>";
+                }
+            }
+            else InterfaceManager.Instance.LabelFollowersModerate.text = _fModerate.ToString();
+            
         }
     }
     public int FolowersModerateDefault;
@@ -109,8 +151,9 @@ public class GameManager : MonoBehaviour
         get => _visibility;
         set
         {
+            
             _visibility = value;
-            InterfaceManager.Instance.LabelVisibility.text = _visibility.ToString();
+            InterfaceManager.Instance.LabelVisibility.text = _visibility.ToString() + "%";
         }
     }
     public int VisibilityDefault;
@@ -132,7 +175,15 @@ public class GameManager : MonoBehaviour
     {
         InterfaceManager.Instance.ShowGame();
         ResetGame();
-        InitiateWarmup();
+        if (firstTime)
+        {
+            InterfaceManager.Instance.ShowNewspaper();
+            firstTime = false;
+        }
+        else
+        {
+            InitiateWarmup();
+        }
     }
 
     public void InitiateWarmup()
@@ -140,13 +191,16 @@ public class GameManager : MonoBehaviour
         CurrentGameState = GameState.Warmup;
         CleanPredictions();
         StartCoroutine(WarmupRoutine());
-
+        InterfaceManager.Instance.UpdateOverlay();
     }
     
     private IEnumerator WarmupRoutine()
     {
         PredictHope -= HopeDecayValue;
+        PredictPower += PowerIncrementValue;
+        Power = PowerDefault;
         UpdatePredictions();
+        UpdateStaticPredictions();
         for (int i = HandCount; i < 5; i++)
         {
             Deck.Instance.GenerateCard();
@@ -156,42 +210,52 @@ public class GameManager : MonoBehaviour
         }
         //display diary
 
+        InterfaceManager.Instance.TurnAcceptButtn.interactable = true;
         CurrentGameState = GameState.PlayerTurn;
     }
 
 
     public void OnTurnAcceptClicked()
     {
+        InterfaceManager.Instance.TurnAcceptButtn.interactable = false;
         if (CurrentGameState != GameState.PlayerTurn) return;
         ProcessTurn();
-        ProcessGovAI();
-
-        StartCoroutine(InterfaceManager.Instance.TurnEffectCoroutine());
-
     }
-
+    public GameObject PItemPrefab;
+    
     public void GoNewspaper()
     {
+        
         CurrentGameState = GameState.Newspaper;
-        InterfaceManager.Instance.ShowNewspaper();
+        //InterfaceManager.Instance.ShowNewspaper();
+        InterfaceManager.Instance.CleanTable();
+        InitiateWarmup();
     }
 
     public void OnNewspaperOKClicked()
     {
         CurrentGameState = GameState.Cooldown;
-        AddGovAIEffects();
         InterfaceManager.Instance.HideNewspaper();
-        InterfaceManager.Instance.CleanTable();
-        StartCoroutine(InterfaceManager.Instance.ShowAfterTurnEffects());
         
     }
 
 
     private void ProcessTurn()
     {
-       
+        Hope -= HopeDecayValue;
+        
         foreach (Card item in TableCards)
         {
+            if (item.Rarity == -1)
+            {
+                WinGame(false);
+                return;
+            }
+            if (item.Rarity == -2)
+            {
+                WinGame(true);
+                return;
+            }
             Power += item.CostPower;
             Funds += item.CostFund;
 
@@ -214,43 +278,50 @@ public class GameManager : MonoBehaviour
             FolowersModerate += item.EffectFollowersModerate;
             Visibility += item.EffectVisibility;
         }
-        //TRIGGERS
-
         if (Power < 0) Power = 0;
         if (Funds < 0) Funds = 0;
         if (FollowersRadical < 0) FollowersRadical = 0;
-        if (FolowersModerate < 0) FollowersRadical = 0;
-        if (Visibility < 0) Power = 0;
-        
-        ProcessGovAI();
+        if (FolowersModerate < 0) FolowersModerate = 0;
+        if (Visibility < 0) Visibility = 0;
+        if (Hope <= 0)
+        {
+            LoseGame(2);
+        }
+        else if(Visibility >= 100)
+        {
+            LoseGame(1);
+        }
+        else
+        {
+            CleanPredictions();
+            GoNewspaper();
+        }
+
+
+        //StartCoroutine(InterfaceManager.Instance.TurnEffectCoroutine());
     }
 
-    private void ProcessGovAI()
-    {
-
-    }
-
-    private void AddGovAIEffects()
-    {
-
-    }
-
+    public bool winConditionHope = false;
+    
     public void WinGame(bool isRadical)
     {
         //TODO WIN PARAMETERS
         CurrentGameState = GameState.EndScreen;
-        InterfaceManager.Instance.ShowEndScreen();
+        int type = isRadical ? -1 : -2;
+        InterfaceManager.Instance.ShowEndScreen(type);
     }
 
-    public void LooseGame()
+    public void LoseGame(int type)
     {
         //TODO LOSE PARAMETERS
         CurrentGameState = GameState.EndScreen;
-        InterfaceManager.Instance.ShowEndScreen();
+        ResetGame();
+        InterfaceManager.Instance.ShowEndScreen(type);
     }
 
     private void ResetGame()
     {
+        winConditionHope = false;
         HandCount = 0;
         Hope = HopeDefault;
         Power = PowerDefault;
@@ -263,6 +334,47 @@ public class GameManager : MonoBehaviour
         StaticCards.Clear();
         InterfaceManager.Instance.OccupiedTableSlots.Clear();
         InterfaceManager.Instance.OccupiedStaticSlots.Clear();
+        Transform c = null;
+        while(InterfaceManager.Instance.HandParentPanel.childCount > 0)
+        {
+            c = InterfaceManager.Instance.HandParentPanel.GetChild(0);
+            Debug.Log(c.name);
+            c.SetParent(null);
+            DestroyImmediate(c.gameObject);
+        }
+        foreach (var item in InterfaceManager.Instance.TableSlots)
+        {
+            if (item.childCount > 0)
+            {
+                Transform card = null;
+                for (int j = 0; j < item.childCount; j++)
+                {
+                    if (item.GetChild(j).name == "Card(Clone)")
+                    {
+                        card = item.GetChild(j);
+                        card.SetParent(null);
+                        Destroy(card.gameObject);
+                    }
+                }
+            }
+        }
+        foreach (var item in InterfaceManager.Instance.StaticSlots)
+        {
+            if (item.childCount > 1)
+            {
+                Transform card = null;
+                for (int j = 0; j < item.childCount; j++)
+                {
+                    if (item.GetChild(j).name == "Card(Clone)")
+                    {
+                        card = item.GetChild(j);
+                        card.SetParent(null);
+                        Destroy(card.gameObject);
+                    }
+                }
+            }
+        }
+            
 
         win_radical = false;
         win_moderate = false;
@@ -304,8 +416,54 @@ public class GameManager : MonoBehaviour
             PredictVisibility < 0 ? prefixGreen + PredictVisibility.ToString() + suffix : prefixRed + "+" + PredictVisibility.ToString() + suffix;
 
         InterfaceManager.Instance.LabelPredictHope.text = PredictHope == 0 ? "" :
-            PredictHope < 0 ? prefixRed + PredictHope.ToString() + suffix : prefixGreen + PredictHope.ToString() + suffix;
+            PredictHope < 0 ? prefixRed + PredictHope.ToString() + suffix : prefixGreen + "+" + PredictHope.ToString() + suffix;
     } 
+
+    public void UpdateStaticPredictions()
+    {
+        foreach (var slot in InterfaceManager.Instance.StaticSlots)
+        {
+            if (slot.childCount == 2) continue;
+
+            Card CardData = slot.GetComponentsInChildren<CardView>()[0].CardData;
+
+            PredictFmod += CardData.EffectFollowersModerate;
+            PredictFRad += CardData.EffectFollowersRadical;
+            PredictFunds += CardData.CostFund;
+            PredictPower += CardData.CostPower;
+            PredictFunds += CardData.EffectFunds;
+            PredictPower += CardData.EffectPower;
+            PredictVisibility += CardData.EffectVisibility;
+            PredictHope += CardData.EffectHope;
+
+        }
+        UpdatePredictions();
+    }
+    public void UpdateStaticValues()
+    {
+        foreach (var slot in InterfaceManager.Instance.StaticSlots)
+        {
+            if (slot.childCount == 2) continue;
+
+            Card CardData = slot.GetComponentsInChildren<CardView>()[0].CardData;
+
+            FolowersModerate += CardData.EffectFollowersModerate;
+            FollowersRadical += CardData.EffectFollowersRadical;
+            Funds += CardData.EffectFunds;
+            Power += CardData.EffectPower;
+            Visibility += CardData.EffectVisibility;
+            Hope += CardData.EffectHope;
+
+            CardData.CostFund = 0;
+            slot.GetComponentsInChildren<CardView>()[0].LabelFundsCost.text = CardData.CostFund.ToString();
+            CardData.CostPower = 0;
+            slot.GetComponentsInChildren<CardView>()[0].LabelPoweCost.text = CardData.CostPower.ToString();
+        }
+        UpdatePredictions();
+    }
+    Color c = new Color32(24, 24, 24, 255);
+
+
 
 
 }

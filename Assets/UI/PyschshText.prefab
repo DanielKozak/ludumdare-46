@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5091614280327603733
 RectTransform:
   m_ObjectHideFlags: 0
@@ -66,8 +66,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: text_fish
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d0fe5cd4c167e76478da752094c9fa19, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 891ce06f481a2334286566e4463064d9, type: 2}
+  m_sharedMaterial: {fileID: -3318893089439026588, guid: 891ce06f481a2334286566e4463064d9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -92,8 +93,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -144,7 +145,7 @@ MonoBehaviour:
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -165,12 +166,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5091614280327603732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbe6d5966c391d14080e41d5c306eb6a, type: 3}
+  m_Script: {fileID: 11500000, guid: 0290ec602c793b94fb0a876a297f2464, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  translationSpeed: 150
-  duration: 1
-  removalOffset: 0.5
+  translationSpeed: 100
+  duration: 4
+  removalOffset: 1
   translationSpeedLossFactor: 1.5
   translationAxis: {x: 0, y: 1, z: 0}
   Label: {fileID: 0}
+  c: {r: 0, g: 0, b: 0, a: 0}

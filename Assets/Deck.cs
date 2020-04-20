@@ -34,7 +34,7 @@ public class Deck : MonoBehaviour
     {
         CardView newCard = Instantiate(CardViewPrefab, InterfaceManager.Instance.HandParentPanel).GetComponent<CardView>();
 
-        int chooseCounter = 1000;
+        int chooseCounter = 100;
 
         while (chooseCounter != 0)
         {
@@ -61,12 +61,12 @@ public class Deck : MonoBehaviour
         Card result;
         int CHANCE = UnityEngine.Random.Range(0, 100);
         //CHECK WIN CONDS AND SPAWN CARDS
-        if (!win_r )//&& CheckCardAgainstReq(win_radical))
+        if (GameManager.Instance.winConditionHope && !win_r && CheckCardAgainstReq(win_radical))
         {
             win_r = true;
             return win_radical;
         }
-        if (!win_m && CheckCardAgainstReq(win_moderate))
+        if (GameManager.Instance.winConditionHope && !win_m && CheckCardAgainstReq(win_moderate))
         {
             win_m = true;
             return win_moderate;

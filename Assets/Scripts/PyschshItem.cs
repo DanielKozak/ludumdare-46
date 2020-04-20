@@ -17,12 +17,13 @@ public class PyschshItem : MonoBehaviour
     private Vector3 oldPosition;
 
     public TMP_Text Label;
+    public Color c = Color.white;
     private void OnEnable()
     {
         mTransform = gameObject.transform;
         oldPosition = gameObject.transform.position;
         Label = gameObject.GetComponent<TMP_Text>();
-
+        Label.color = Color.white;
         StartCoroutine(PyschshAnimation());
     }
 
@@ -38,8 +39,7 @@ public class PyschshItem : MonoBehaviour
     {
         timer = 0f;
         currentTranslationSpeed = translationSpeed;
-
-        while(timer < duration)
+        while (timer < duration)
         {
             yield return null;
             mTransform.position = mTransform.position + translationAxis * currentTranslationSpeed * Time.deltaTime;
@@ -54,6 +54,6 @@ public class PyschshItem : MonoBehaviour
             timer += Time.deltaTime;
         }
 
-        gameObject.SetActive(false);
+        DestroyImmediate(gameObject);// ameObject.SetActive(false);
     }
 }
